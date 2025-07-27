@@ -1,0 +1,35 @@
+import cv2
+import os
+
+# Replace this with the full path to your video file
+video_path = "/content/mountains.mp4"
+
+# Create a folder to store the frames
+output_folder = "frames"
+os.makedirs(output_folder, exist_ok=True)
+
+# Load the video
+video = cv2.VideoCapture(video_path)
+
+# Get FPS and total number of frames
+fps = video.get(cv2.CAP_PROP_FPS)
+total_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+duration = int(total_frames / fps)
+
+print(f"Video loaded: {video_path}")
+print(f"FPS: {fps}, Total Frames: {total_frames}, Duration: {duration} seconds")
+
+# Loop over each second
+for sec in range(duration + 1):
+    frame_id = int(sec * fps)
+    video.set(cv2.CAP_PROP_POS_FRAMES, frame_id)
+    success, frame = video.read()
+    if success:
+        frame_filename = os.path.join(output_folder, f"frame_{sec}.jpg")
+        cv2.imwrite(frame_filename, frame)
+        print(f"Saved {frame_filename}")
+    else:
+        print(f"Failed to capture frame at {sec} second")
+
+video.release()
+print("Frame extraction complete.")
